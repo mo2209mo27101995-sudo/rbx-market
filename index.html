@@ -1,0 +1,555 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RBX Market</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+  body { background: #0a0a0a; color: #e5e5e5; }
+
+  header {
+    background: #111;
+    border-bottom: 1px solid #1f1f1f;
+    padding: 16px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  header h1 { font-size: 20px; font-weight: 800; letter-spacing: -0.5px; }
+  header h1 span { color: #4b7dff; }
+  header .user-info { display: flex; align-items: center; gap: 12px; font-size: 14px; }
+  header .user-info img { width: 34px; height: 34px; border-radius: 50%; border: 2px solid #1f1f1f; background: #1a1a1a; }
+  header .user-info span { color: #ccc; font-weight: 500; }
+  header .logout {
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    color: #ccc;
+    padding: 7px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.2s;
+  }
+  header .logout:hover { background: #222; color: #fff; }
+
+  .login-page {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 20px;
+    background: #0a0a0a;
+  }
+  .login-box {
+    background: #111;
+    border: 1px solid #1f1f1f;
+    padding: 48px 40px;
+    border-radius: 16px;
+    text-align: center;
+    max-width: 400px;
+    width: 100%;
+  }
+  .login-logo {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 20px;
+    background: linear-gradient(135deg, #4b7dff, #8b5cf6);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+  }
+  .login-box h2 { font-size: 24px; font-weight: 800; margin-bottom: 8px; letter-spacing: -0.5px; }
+  .login-box p { color: #888; font-size: 14px; margin-bottom: 30px; line-height: 1.5; }
+  .login-btn {
+    width: 100%;
+    background: #fff;
+    color: #0a0a0a;
+    border: none;
+    padding: 14px;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 700;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+  .login-btn:hover { background: #e5e5e5; }
+  .login-btn svg { width: 20px; height: 20px; }
+
+  .main-page { display: none; min-height: 100vh; }
+  .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+  .page-title { font-size: 26px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 6px; }
+  .page-subtitle { color: #666; font-size: 14px; }
+
+  .categories { display: flex; gap: 8px; margin-bottom: 30px; flex-wrap: wrap; }
+  .cat-btn {
+    background: #111;
+    border: 1px solid #1f1f1f;
+    color: #888;
+    padding: 8px 18px;
+    border-radius: 20px;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .cat-btn:hover { border-color: #333; color: #ccc; }
+  .cat-btn.active { background: #fff; color: #0a0a0a; border-color: #fff; }
+
+  .products {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 20px;
+  }
+  .product {
+    background: #111;
+    border: 1px solid #1f1f1f;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.2s;
+    cursor: pointer;
+  }
+  .product:hover { border-color: #333; transform: translateY(-2px); }
+  .product-img {
+    height: 150px;
+    background: linear-gradient(135deg, #1a1a1a, #0f0f0f);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 42px;
+    border-bottom: 1px solid #1f1f1f;
+  }
+  .product-body { padding: 16px; }
+  .product-title { font-size: 15px; font-weight: 600; margin-bottom: 6px; color: #fff; }
+  .product-desc { font-size: 12.5px; color: #666; margin-bottom: 12px; line-height: 1.5; }
+
+  .seller-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 0;
+    border-top: 1px solid #1a1a1a;
+    border-bottom: 1px solid #1a1a1a;
+    margin-bottom: 12px;
+  }
+  .seller-avatar {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #4b7dff, #8b5cf6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    color: #fff;
+    flex-shrink: 0;
+  }
+  .seller-info { display: flex; flex-direction: column; min-width: 0; }
+  .seller-name { font-size: 12px; color: #ccc; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .seller-label { font-size: 10px; color: #555; text-transform: uppercase; letter-spacing: 0.5px; }
+
+  .rating-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 12px;
+    font-size: 12px;
+  }
+  .stars { color: #f5b301; letter-spacing: 1px; }
+  .rating-num { color: #ccc; font-weight: 600; }
+  .rating-count { color: #555; }
+
+  .product-footer { display: flex; justify-content: space-between; align-items: center; }
+  .product-price { color: #4b7dff; font-weight: 700; font-size: 15px; }
+  .product-badge {
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    color: #888;
+    text-transform: capitalize;
+    font-weight: 500;
+  }
+  .sales-count {
+    font-size: 11px;
+    color: #666;
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .empty { text-align: center; padding: 80px 20px; color: #555; font-size: 14px; }
+
+  .upload-btn {
+    background: #4b7dff;
+    color: #fff;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 10px;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.2s;
+  }
+  .upload-btn:hover { background: #3b6be0; }
+  .top-bar { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 30px; flex-wrap: wrap; gap: 16px; }
+</style>
+</head>
+<body>
+
+<div class="login-page" id="loginPage">
+  <div class="login-box">
+    <div class="login-logo">🛒</div>
+    <h2>RBX Market</h2>
+    <p>Buy and sell Roblox systems, scripts, and models.</p>
+    <button class="login-btn" onclick="startRobloxOAuth()">
+      <svg viewBox="0 0 24 24" fill="currentColor">
+        <path d="M4.2 9.4l11.8-3.2 3.2 11.8-11.8 3.2z"/>
+      </svg>
+      Continue with Roblox
+    </button>
+  </div>
+</div>
+
+<div class="main-page" id="mainPage">
+  <header>
+    <h1>RBX <span>Market</span></h1>
+    <div class="user-info">
+      <img id="headerAvatar" src="" alt="">
+      <span id="headerName"></span>
+      <button class="logout" onclick="logout()">Logout</button>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="top-bar">
+      <div>
+        <h2 class="page-title">Products</h2>
+        <p class="page-subtitle">Browse systems, scripts, and models from the community</p>
+      </div>
+      <button class="upload-btn" onclick="alert('Upload feature coming soon')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 5v14M5 12h14"/>
+        </svg>
+        Upload Product
+      </button>
+    </div>
+
+    <div class="categories">
+      <button class="cat-btn active" onclick="filterCategory(this, 'all')">All</button>
+      <button class="cat-btn" onclick="filterCategory(this, 'scripts')">Scripts</button>
+      <button class="cat-btn" onclick="filterCategory(this, 'systems')">Systems</button>
+      <button class="cat-btn" onclick="filterCategory(this, 'models')">Models</button>
+    </div>
+
+    <div class="products" id="productsList"></div>
+  </div>
+</div>
+
+<script>
+const ROBLOX_CLIENT_ID = "2409250177640362189";
+const REDIRECT_URI = "http://localhost:3000/";
+
+const products = [
+  {
+    title: "Full Login System",
+    desc: "Professional authentication system for your game.",
+    price: "150 R$",
+    cat: "systems",
+    icon: "🔐",
+    seller: "DarkPhantom",
+    sellerId: 3488995689,
+    rating: 4.8,
+    reviews: 124,
+    sales: 342
+  },
+  {
+    title: "Server Admin Script",
+    desc: "Complete server management dashboard.",
+    price: "200 R$",
+    cat: "scripts",
+    icon: "⚙️",
+    seller: "BuildMaster",
+    sellerId: 1,
+    rating: 4.6,
+    reviews: 89,
+    sales: 210
+  },
+  {
+    title: "Sports Car Model",
+    desc: "High-quality 3D car model, ready to use.",
+    price: "80 R$",
+    cat: "models",
+    icon: "🚗",
+    seller: "ModelKing",
+    sellerId: 2,
+    rating: 4.9,
+    reviews: 256,
+    sales: 890
+  },
+  {
+    title: "In-Game Shop System",
+    desc: "Full shop system with custom UI.",
+    price: "250 R$",
+    cat: "systems",
+    icon: "🛒",
+    seller: "ScriptGuru",
+    sellerId: 3,
+    rating: 4.7,
+    reviews: 67,
+    sales: 145
+  },
+  {
+    title: "Anti-Exploit Script",
+    desc: "Protection against hackers and exploits.",
+    price: "180 R$",
+    cat: "scripts",
+    icon: "🛡️",
+    seller: "SecureDev",
+    sellerId: 4,
+    rating: 5.0,
+    reviews: 412,
+    sales: 1203
+  },
+  {
+    title: "Modern Building Model",
+    desc: "Ready-to-use modern building asset.",
+    price: "120 R$",
+    cat: "models",
+    icon: "🏢",
+    seller: "ArchitectPro",
+    sellerId: 5,
+    rating: 4.5,
+    reviews: 45,
+    sales: 78
+  },
+  {
+    title: "Economy System",
+    desc: "Complete money and shop system.",
+    price: "300 R$",
+    cat: "systems",
+    icon: "💰",
+    seller: "EconMaster",
+    sellerId: 6,
+    rating: 4.8,
+    reviews: 156,
+    sales: 423
+  },
+  {
+    title: "Animation Script",
+    desc: "Professional player animations pack.",
+    price: "100 R$",
+    cat: "scripts",
+    icon: "🎬",
+    seller: "AnimDev",
+    sellerId: 7,
+    rating: 4.4,
+    reviews: 32,
+    sales: 67
+  }
+];
+
+function renderStars(rating) {
+  const full = Math.floor(rating);
+  const half = rating - full >= 0.5;
+  let stars = '';
+  for (let i = 0; i < full; i++) stars += '★';
+  if (half) stars += '⯨';
+  for (let i = full + (half ? 1 : 0); i < 5; i++) stars += '☆';
+  return stars;
+}
+
+function renderProducts(filter) {
+  const list = document.getElementById('productsList');
+  const filtered = filter === 'all' ? products : products.filter(p => p.cat === filter);
+  if (filtered.length === 0) {
+    list.innerHTML = '<div class="empty">No products found</div>';
+    return;
+  }
+  list.innerHTML = filtered.map(p => `
+    <div class="product">
+      <div class="product-img">${p.icon}</div>
+      <div class="product-body">
+        <div class="product-title">${p.title}</div>
+        <div class="product-desc">${p.desc}</div>
+
+        <div class="seller-row">
+          <div class="seller-avatar">${p.seller.charAt(0).toUpperCase()}</div>
+          <div class="seller-info">
+            <div class="seller-name">${p.seller}</div>
+            <div class="seller-label">Seller</div>
+          </div>
+        </div>
+
+        <div class="rating-row">
+          <span class="stars">${renderStars(p.rating)}</span>
+          <span class="rating-num">${p.rating.toFixed(1)}</span>
+          <span class="rating-count">(${p.reviews})</span>
+        </div>
+
+        <div class="product-footer">
+          <span class="product-price">${p.price}</span>
+          <span class="product-badge">${p.cat}</span>
+        </div>
+
+        <div class="sales-count">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 6L9 17l-5-5"/>
+          </svg>
+          ${p.sales} sales
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function filterCategory(btn, cat) {
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderProducts(cat);
+}
+
+function base64UrlEncode(str) {
+  return btoa(str).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+function generateRandomString(len) {
+  const array = new Uint8Array(len);
+  crypto.getRandomValues(array);
+  return Array.from(array, b => ('0' + b.toString(16)).slice(-2)).join('');
+}
+async function generateCodeChallenge(verifier) {
+  const data = new TextEncoder().encode(verifier);
+  const digest = await crypto.subtle.digest('SHA-256', data);
+  return base64UrlEncode(String.fromCharCode(...new Uint8Array(digest)));
+}
+
+async function startRobloxOAuth() {
+  const verifier = generateRandomString(32);
+  sessionStorage.setItem('roblox_code_verifier', verifier);
+  const challenge = await generateCodeChallenge(verifier);
+  const state = generateRandomString(16);
+  sessionStorage.setItem('roblox_oauth_state', state);
+
+  const params = new URLSearchParams({
+    client_id: ROBLOX_CLIENT_ID,
+    redirect_uri: REDIRECT_URI,
+    response_type: 'code',
+    scope: 'openid profile',
+    state: state,
+    code_challenge: challenge,
+    code_challenge_method: 'S256'
+  });
+
+  window.location.href = 'https://apis.roblox.com/oauth/v1/authorize?' + params.toString();
+}
+
+async function exchangeCodeForToken(code) {
+  const verifier = sessionStorage.getItem('roblox_code_verifier');
+  const body = new URLSearchParams({
+    grant_type: 'authorization_code',
+    code: code,
+    redirect_uri: REDIRECT_URI,
+    client_id: ROBLOX_CLIENT_ID,
+    code_verifier: verifier
+  });
+  const res = await fetch('https://apis.roblox.com/oauth/v1/token', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: body.toString()
+  });
+  if (!res.ok) throw new Error('Token failed');
+  return await res.json();
+}
+
+async function fetchUserInfo(token) {
+  const res = await fetch('https://apis.roblox.com/oauth/v1/userinfo', {
+    headers: { Authorization: 'Bearer ' + token }
+  });
+  return await res.json();
+}
+
+async function handleCallback() {
+  const params = new URLSearchParams(window.location.search);
+  const code = params.get('code');
+  const state = params.get('state');
+  if (!code) return false;
+  if (state !== sessionStorage.getItem('roblox_oauth_state')) return false;
+
+  try {
+    const tokens = await exchangeCodeForToken(code);
+    const user = await fetchUserInfo(tokens.access_token);
+    sessionStorage.setItem('roblox_user', JSON.stringify(user));
+    window.history.replaceState({}, document.title, window.location.pathname);
+    return true;
+  } catch (e) {
+    console.error(e);
+    return false;
+  }
+}
+
+function generateAvatar(name) {
+  const letter = (name || 'U').charAt(0).toUpperCase();
+  const colors = ['#4b7dff', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981', '#06b6d4'];
+  const color = colors[(name || '').charCodeAt(0) % colors.length] || '#4b7dff';
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80">
+    <rect width="80" height="80" fill="${color}"/>
+    <text x="50%" y="50%" font-family="Inter, sans-serif" font-size="36" font-weight="700" fill="#fff" text-anchor="middle" dominant-baseline="central">${letter}</text>
+  </svg>`;
+  return 'data:image/svg+xml;base64,' + btoa(svg);
+}
+
+function showMainPage() {
+  const stored = sessionStorage.getItem('roblox_user');
+  if (!stored) return;
+  const user = JSON.parse(stored);
+
+  const displayName = user.preferred_username || user.name || 'User';
+  const avatarUrl = user.picture || generateAvatar(displayName);
+
+  document.getElementById('loginPage').style.display = 'none';
+  document.getElementById('mainPage').style.display = 'block';
+  document.getElementById('headerName').innerText = displayName;
+  document.getElementById('headerAvatar').src = avatarUrl;
+  document.getElementById('headerAvatar').onerror = function() {
+    this.onerror = null;
+    this.src = generateAvatar(displayName);
+  };
+
+  renderProducts('all');
+}
+
+function logout() {
+  sessionStorage.clear();
+  location.reload();
+}
+
+window.addEventListener('DOMContentLoaded', async () => {
+  const handled = await handleCallback();
+  if (handled) {
+    showMainPage();
+  }
+});
+</script>
+</body>
+</html>
